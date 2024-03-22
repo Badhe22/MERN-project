@@ -25,7 +25,7 @@ const Login = () => {
       if (response.data.message === 'Success') {
         alert(userType === 'admin' ? 'Admin login successful!' : 'Login successful!');
         localStorage.setItem('token', response.data.token);
-        navigate('/home');
+        navigate('/admin/');
       } else {
         alert('Incorrect email, password, or secret key! Please try again.');
       }
