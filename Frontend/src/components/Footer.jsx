@@ -8,11 +8,12 @@ import Policy from "../pages/Policy";
 
 const Footer = () => {
   return (
-    <div className ="footer" class="text-center mt-3 align-bottom flex items-center mx-auto bg-red-600 p-5" >
-      <h1 className="text-center mt-3 p-5 flex place-content-center items-center mx-auto">Copyright &copy; Cursu</h1>
-      <br></br>
-      <p className="text-center mt-3 p-5 place-content-center flex items-center mx-auto">
-        <Link to="/about">About</Link> | <Link to="/contact">Contact</Link> | <Link to="/policy">Privacy Policy</Link>
+    <div className="bg-gradient-to-r from-red-600 to-black text-Black py-6 px-6 bg-fixed">
+      <h1 className="text-center text-2xl">Copyright &copy; hero</h1>
+      <p className="text-center mt-3">
+        <Link to="/about" className=" hover:text-blue-500">About</Link> |
+        <Link to="/contact" className=" hover:text-blue-500">Contact</Link> |
+        <Link to="/policy" className=" hover:text-blue-500">Privacy Policy</Link>
       </p>
     </div>
   );

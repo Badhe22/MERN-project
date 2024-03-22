@@ -2,8 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require('jsonwebtoken');
-const usersModel = require('./Models/Users');
 const bcrypt = require('bcrypt');
+const usersModel = require('./Models/Users');
 
 const app = express();
 app.use(express.json());
@@ -67,35 +67,49 @@ app.post('/register', (req, res) => {
         });
 });
 
-app.post('/login', (req, res) => {
-    const { email, password } = req.body;
+app.post('/login', async (req, res) => {
+    const { email, password, userType, adminSecretKey } = req.body;
 
-    usersModel.findOne({ email: email })
-        .then(user => {
+    try {
+        if (userType === 'admin') {
+            // Admin login
+            if (!adminSecretKey) {
+                return res.status(400).json({ message: "Admin secret key is required" });
+            }
+
+            if (adminSecretKey !== 'admin') {
+                return res.status(400).json({ message: "Invalid admin secret key" });
+            }
+
+            // Generate admin token
+            const token = jwt.sign({ email: 'admin@example.com', userType: 'admin' }, secretKey);
+            return res.json({ message: "Success", token });
+        } else {
+            // Regular user login
+            if (!email || !password) {
+                return res.status(400).json({ message: "Email and password are required" });
+            }
+
+            const user = await usersModel.findOne({ email: email });
+
             if (!user) {
                 return res.status(400).json({ message: "Incorrect email or password" });
             }
 
-            bcrypt.compare(password, user.password, (err, result) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({ error: "Internal Server Error" });
-                }
+            const match = await bcrypt.compare(password, user.password);
 
-                if (result) {
-                    const token = jwt.sign({ email: user.email }, secretKey);
-                    console.log('Generated Token:', token); // Log the token to the console
-                  
-                    return res.json({ message: "Success", token });
-                } else {
-                    return res.status(400).json({ message: "Incorrect email or password" });
-                }
-            });
-        })
-        .catch(err => {
-            console.error(err);
-            res.status(500).json({ error: "Internal Server Error" });
-        });
+            if (!match) {
+                return res.status(400).json({ message: "Incorrect email or password" });
+            }
+
+            // Generate user token
+            const token = jwt.sign({ email: user.email, userType: 'user' }, secretKey);
+            return res.json({ message: "Success", token });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 app.get("/", (req, res) => {
@@ -111,4 +125,3 @@ const PORT = 3002;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-

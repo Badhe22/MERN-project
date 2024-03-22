@@ -16,7 +16,7 @@ const Register = () => {
     const handleRegister = (event) => {
         event.preventDefault();
     
-        axios.post('http://localhost:3001/register', { firstName, lastName, email, password })
+        axios.post('http://localhost:3002/register', { firstName, lastName, email, password })
             .then(result => {
                 console.log(result);
                 const responseData = result.data;

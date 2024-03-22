@@ -14,10 +14,18 @@ function Navbar() {
     
   useEffect(() => {
     // Load registered users from local storage on component mount
-    const storedUsers =
-      JSON.parse(localStorage.getItem("registeredUsers")) || [];
-    setRegisteredUsers(storedUsers);
+    const storedUsers = localStorage.getItem("registeredUsers");
+    if (storedUsers) {
+      try {
+        const parsedUsers = JSON.parse(storedUsers);
+        setRegisteredUsers(parsedUsers);
+      } catch (error) {
+        console.error("Error parsing JSON:", error);
+        // Handle the error appropriately, e.g., by setting default value for registeredUsers
+      }
+    }
   }, []);
+  
 
   
   const handleRegister = (userData) => {
