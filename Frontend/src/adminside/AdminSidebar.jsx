@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const AdminSidebar = () => {
   return (
     <aside className="bg-violet-800 text-black p-4 ">
-      <div className="mb-6 bg-violet-800 p-1">
+      <div className="mb-6 bg-violet-800 p-1 ">
         <h3 className="text-xl font-bold mb-2">Admin Panel</h3>
         <ul>
           <li>

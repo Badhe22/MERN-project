@@ -11,7 +11,7 @@ const Login = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-
+  
     try {
       const loginData = {
         email,
@@ -19,13 +19,19 @@ const Login = () => {
         userType,
         adminSecretKey: userType === 'admin' ? adminSecretKey : undefined
       };
-
+  
       const response = await axios.post('http://localhost:3002/login', loginData);
-
+  
       if (response.data.message === 'Success') {
-        alert(userType === 'admin' ? 'Admin login successful!' : 'Login successful!');
-        localStorage.setItem('token', response.data.token);
-        navigate('/admin/');
+        if (userType === 'admin') {
+          alert('Admin login successful!');
+          localStorage.setItem('token', response.data.token);
+          navigate('/admin/');
+        } else {
+          alert('Login successful!');
+          localStorage.setItem('token', response.data.token);
+          navigate('/');
+        }
       } else {
         alert('Incorrect email, password, or secret key! Please try again.');
       }
@@ -34,6 +40,7 @@ const Login = () => {
       console.error('Login Error:', error);
     }
   };
+  
 
   return (
     <div>
