@@ -44,7 +44,7 @@ const Login = () => {
 
   return (
     <div>
-      <div className="flex justify-center items-center text-center vh-100">
+      <div className="flex justify-center items-center text-center vh-100 " style= {{backgroundImage : "linear-gradient(#00d5ff,#0095ff,rgba(93,0,255,.555))"}}>
         <div className="bg-white p-6 rounded-xl m-8" style={{ width: '40%' }}>
           <h2 className='mb-3 text-blue-600 text-xl'>Login</h2>
           <form onSubmit={handleLogin}>

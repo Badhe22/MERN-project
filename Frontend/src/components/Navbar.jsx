@@ -1,9 +1,7 @@
-// Navbar.js
 import React, { useState, useEffect } from "react";
-import { Link, Routes, Route, Navigate } from "react-router-dom";
-import Register from "./Register";
-import Login from "./Login";
- 
+import { Link } from "react-router-dom";
+import { useSearch } from '../Context/SearchContext';
+
 function Navbar() {
   const [isRegisterVisible, setRegisterVisible] = useState(false);
   const [isLoginVisible, setLoginVisible] = useState(false);
@@ -11,9 +9,17 @@ function Navbar() {
   const [registeredUsers, setRegisteredUsers] = useState([]);
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [loginError, setLoginError] = useState("");
-    
+  const [categories, setCategories] = useState([]);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [, setSearchResults] = useSearch();
+
+  const handleSearch = () => {
+    setSearchResults([]);
+    console.log("Search query:", searchQuery);
+  };
+
   useEffect(() => {
-    // Load registered users from local storage on component mount
     const storedUsers = localStorage.getItem("registeredUsers");
     if (storedUsers) {
       try {
@@ -21,130 +27,123 @@ function Navbar() {
         setRegisteredUsers(parsedUsers);
       } catch (error) {
         console.error("Error parsing JSON:", error);
-        // Handle the error appropriately, e.g., by setting default value for registeredUsers
       }
     }
+    fetchCategories();
   }, []);
-  
 
-  
+  const fetchCategories = () => {
+    // Simulated categories, replace with actual fetch logic
+    const categories = [
+      { id: 1, name: "Electronics" },
+      { id: 2, name: "Clothing" },
+      { id: 3, name: "Books" }
+    ];
+    setCategories(categories);
+  };
+
+  const handleCategoryDropdown = () => {
+    setShowCategoryDropdown(!showCategoryDropdown);
+  };
+
   const handleRegister = (userData) => {
     setRegisterVisible(false);
-    // Simulate storing registered users (in a real app, use a database)
     const updatedUsers = [...registeredUsers, userData];
     setRegisteredUsers(updatedUsers);
     saveUsersToLocalStorage(updatedUsers);
-    // Show the login form after successful registration
     setLoginVisible(true);
-    // Reset login success and error messages
     setLoginSuccess(false);
     setLoginError("");
   };
 
   const handleLogin = (userData) => {
-    // Perform validation and check if the user is registered
     const userExists = registeredUsers.some(
       (user) =>
         user.email === userData.email && user.password === userData.password
     );
 
     if (userExists) {
-      // Set the user as logged in and show the success message
       setLoggedIn(true);
       setLoginSuccess(true);
       setLoginError("");
-      // Reset the login form visibility
       setLoginVisible(false);
     } else {
-      // Display an error if the user is not registered
       setLoggedIn(false);
       setLoginSuccess(false);
       setLoginError("Invalid email or password.");
-      // Reset the login form visibility
       setLoginVisible(true);
     }
   };
 
   const handleLogout = () => {
-    // Handle logout logic (e.g., clear user session)
-    console.log("Logout");
-    // Set the user as logged out
     setLoggedIn(false);
-    // Reset login success and error messages
     setLoginSuccess(false);
     setLoginError("");
   };
 
   return (
-    <div>
-      <nav className="relative flex flex-wrap items-center content-between py-2 px-4  navbar-secondary bg-indigo-600">
-        <div className="container mx-auto sm:px-4 max-w-full  ">
-          <Link className="inline-block pt-1 pb-1 mr-4 text-lg whitespace-no-wrap" style={{ color: "Black" }} to="/">
-          🛒 Ecommerce App
-        
+    <nav className="relative flex items-center justify-between py-2 px-4 bg-gray-800 text-white">
+      <Link className="text-lg font-bold" to="/">
+        🛒 Ecommerce App
+      </Link>
+
+      <div className="flex items-center">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search..."
+          className="px-2 py-1 mr-2 bg-gray-200 text-gray-800 border border-gray-300 rounded-md"
+          style={{ fontSize: "16px" }}
+        />
+        <button onClick={handleSearch} className="px-3 py-1 bg-green-600 text-white rounded-md">
+          Search
+        </button>
+      </div>
+
+      <ul className="flex list-none">
+        <li className="mr-4">
+          <Link className="hover:text-gray-300" to="/">
+            Home
           </Link>
+        </li>
+        
+        <li className="mr-4 relative">
+          <Link className="hover:text-gray-300" to="/category">
+            Categories
+          </Link>
+          <button className="ml-1 hover:text-gray-300" onClick={handleCategoryDropdown} style={{ fontSize: "9px" }}>
+            ▼
+          </button>
+          {showCategoryDropdown && (
+            <div className="absolute top-full left-0 bg-white text-black mt-1 py-1 px-2 rounded-md">
+              {categories.map(category => (
+                <Link key={category.id} className="block hover:text-gray-300" to={`/category/${category.id}`}>
+                  {category.name}
+                </Link>
+              ))}
+            </div>
+          )}
+        </li>
 
-          <ul className="flex flex-wrap list-none pl-0 mb-0 justify-end text-white">
-            {!isLoggedIn && (
-              <>
-                <li className="">
-                  <Link className="inline-block py-2 px-4 no-underline" style={{ color: "Black" }} to="/">
-                    Home
-                  </Link>
-                </li>
-                <li className="">
-                  <Link className="inline-block py-2 px-4 no-underline" style={{ color: "Black" }} to="/blog">
-                    Blog
-                  </Link>
-                </li>
-                <li className="">
-                  <Link
-                    className="inline-block py-2 px-4 no-underline"
-                    style={{ color: "Black" }}
-                    to="/register"
-                    onClick={() => {
-                      setRegisterVisible(true);
-                      setLoginVisible(false);
-                    }}
-                  >
-                    Register
-                  </Link>
-                </li>
-                <li className="">
-                  <Link
-                    className="inline-block py-2 px-4 no-underline"
-                    style={{ color: "Black" }}
-                    to="/login"
-                    onClick={(handleLogin) => {
-                      setLoginVisible(true);
-                      setRegisterVisible(false);
-                    }}
-                  >
-                    Login
-                  </Link>
-                </li>{" "}
-
-                <li className="">
-                  <Link
-                    className="inline-block py-2 px-4 no-underline"
-                    style={{ color: "Black" }}
-                    to="/"
-                    onClick={(handleLogout) => {
-                      
-                    }}
-                  >
-                   <button type="button"> Logout </button>
-                  </Link>
-                </li>
-              </>
-            )}
-            {isLoggedIn && <li style={{ color: "Black" }} onClick={handleLogout}>Logout</li>}
-          </ul>
-        </div>
-      </nav>
-      
-    </div>
+        <li className="mr-4">
+          <Link className="hover:text-gray-300" to="/register">
+            Register
+          </Link>
+        </li>
+        <li className="mr-4">
+          <Link className="hover:text-gray-300" to="/login">
+            Login
+          </Link>
+        </li>
+        <li>
+          <button className="hover:text-gray-300" onClick={handleLogout}>
+            Logout
+          </button>
+        </li>
+      </ul>
+    </nav>
   );
 }
 
-export default Navbar;
+export default Navbar
