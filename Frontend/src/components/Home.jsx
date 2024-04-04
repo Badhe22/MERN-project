@@ -26,14 +26,14 @@ function Home({ categories }) {
         </div>
         <div>
           <img
-            src="./Images/homepages.jpg"
+            src="./Images/Slider2.jpg"
             className="w-full h-90"
             alt="Slider Image 2"
           />
         </div>
         <div>
           <img
-            src="./Images/homepages.jpg"
+            src="./Images/Slider3.jpg"
             className="w-full h-90"
             alt="Slider Image 3"
           />
