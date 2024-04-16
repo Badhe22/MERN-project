@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSearch } from '../Context/SearchContext';
-
+//import cart_icon from './public/Images/cart_icon.png'
 function Navbar() {
   const [isRegisterVisible, setRegisterVisible] = useState(false);
   const [isLoginVisible, setLoginVisible] = useState(false);
@@ -13,6 +13,8 @@ function Navbar() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [, setSearchResults] = useSearch();
+
+  const [menu,setMenu] = useState("shop");
 
   const handleSearch = () => {
     setSearchResults([]);
@@ -29,15 +31,15 @@ function Navbar() {
         console.error("Error parsing JSON:", error);
       }
     }
-    fetchCategories();
+   // fetchCategories();
   }, []);
 
-  const fetchCategories = () => {
+  {/*const fetchCategories = () => {
     // Simulated categories, replace with actual fetch logic
     const categories = [
-      { id: 1, name: "Electronics" },
-      { id: 2, name: "Clothing" },
-      { id: 3, name: "Books" }
+      { id: 1, name: "Men" },
+      { id: 2, name: "Women" },
+      { id: 3, name: "Kids" }
     ];
     setCategories(categories);
   };
@@ -45,6 +47,12 @@ function Navbar() {
   const handleCategoryDropdown = () => {
     setShowCategoryDropdown(!showCategoryDropdown);
   };
+
+  const handleCategoryClick = (categoryId) => {
+    setShowCategoryDropdown(false);
+    history.push(`/category/${categoryId}`);
+  };
+*/}
 
   const handleRegister = (userData) => {
     setRegisterVisible(false);
@@ -108,24 +116,42 @@ function Navbar() {
           </Link>
         </li>
         
-        <li className="mr-4 relative">
-          <Link className="hover:text-gray-300" to="/category">
+        <li className="mr-4 relative "  onClick={()=>{setMenu("mens")}}>
+          {/*<Link className="hover:text-gray-300" to="/category">
             Categories
           </Link>
           <button className="ml-1 hover:text-gray-300" onClick={handleCategoryDropdown} style={{ fontSize: "9px" }}>
             ▼
           </button>
-          {showCategoryDropdown && (
-            <div className="absolute top-full left-0 bg-white text-black mt-1 py-1 px-2 rounded-md">
-              {categories.map(category => (
-                <Link key={category.id} className="block hover:text-gray-300" to={`/category/${category.id}`}>
-                  {category.name}
-                </Link>
-              ))}
-            </div>
-          )}
+         } {showCategoryDropdown && (
+          <div className="absolute top-full left-0 bg-white text-black mt-1 py-1 px-2 rounded-md">
+            {categories.map(category => (
+              <button key={category.id} className="block hover:text-gray-300" onClick={() => handleCategoryClick(category.id)}>
+                {category.name}
+              </button>
+            ))}
+          </div>
+          )}  */} <Link className="hover:text-gray-300" to="/mens">
+           
+          Men 
+          </Link> {menu=="mens"?<hr/>:<></>}
         </li>
 
+        <li className="mr-4 relative "   onClick={()=>{setMenu("womens")}}>
+        <Link className="hover:text-gray-300" to="/womens">
+           
+          Women </Link>
+          {menu=="womens"?<hr/>:<></>}
+          
+        </li>
+
+        <li className="mr-4 relative"  onClick={()=>{setMenu("kids")}}>
+        <Link className="hover:text-gray-300" to="/kids">
+           
+          Kids
+          </Link> {menu=="kids"?<hr/>:<></>} 
+        </li>
+        
         <li className="mr-4">
           <Link className="hover:text-gray-300" to="/register">
             Register
@@ -136,6 +162,14 @@ function Navbar() {
             Login
           </Link>
         </li>
+
+
+        <li className="mr-4">
+          <Link className="hover:text-gray-300" to="/cart">
+            Cart
+          </Link>
+        </li>
+        
         <li>
           <button className="hover:text-gray-300" onClick={handleLogout}>
             Logout

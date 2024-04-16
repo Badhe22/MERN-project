@@ -5,6 +5,15 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const usersModel = require('./Models/Users');
 
+//added this below lines
+const Product = require('./Models/Product'); // Import Product model
+const Category = require('./Models/CategoryModel');
+const BusinessUser= require('./Models/BuisinessUser');
+const productRoutes = require('./routes/ProductRoutes'); // Import product routes
+const categoryRoutes = require('./routes/CategoryRoutes'); // Import category routes
+//const authenticateJWT = require('./Middleware/authMiddleware');// Import the authentication middleware
+
+
 const app = express();
 app.use(express.json());
 app.use(cors({
@@ -17,6 +26,8 @@ app.use(cors({
 app.use(express.static('public'));
 
 mongoose.connect("mongodb://127.0.0.1:27017/users");
+
+
 
 const secretKey = 'secret';
 
@@ -37,38 +48,44 @@ const authenticateJWT = (req, res, next) => {
     });
 };
 
-app.post('/register', (req, res) => {
+
+
+
+app.post('/register', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
 
     if (!firstName || !lastName || !email || !password) {
         return res.status(400).json({ message: "Missing required fields" });
     }
 
-    usersModel.findOne({ email: email })
-        .then(user => {
-            if (user) {
-                return res.status(400).json({ message: "Email already registered" });
+    try {
+        // Check if a user with the same email already exists
+        const existingUser = await usersModel.findOne({ email: email });
+        if (existingUser) {
+            return res.status(400).json({ message: "User already exists" });
+        }
+
+        // If the user does not exist, proceed with registration
+        bcrypt.hash(password, 10, (err, hash) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: "Internal Server Error" });
             }
 
-            bcrypt.hash(password, 10, (err, hash) => {
-                if (err) {
+            usersModel.create({ firstName, lastName, email, password: hash })
+                .then(user => res.json({ message: "Registration successful" }))
+                .catch(err => {
                     console.error(err);
-                    return res.status(500).json({ error: "Internal Server Error" });
-                }
-
-                usersModel.create({ firstName, lastName, email, password: hash })
-                    .then(user => res.json({ message: "Registration successful" }))
-                    .catch(err => {
-                        console.error(err);
-                        res.status(500).json({ error: "Internal Server Error" });
-                    });
-            });
-        })
-        .catch(err => {
-            console.error(err);
-            res.status(500).json({ error: "Internal Server Error" });
+                    res.status(500).json({ error: "Internal Server Error" });
+                });
         });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });
+
+
 
 app.post('/login', async (req, res) => {
     const { email, password, userType, adminSecretKey } = req.body;
@@ -114,6 +131,129 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
+
+
+
+
+// Route for getting all products
+app.get("/products", async (req, res) => {
+    try {
+        const products = await Product.find();
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Route for creating a new product
+app.post("/products", async (req, res) => {
+    const { name, description, price } = req.body;
+    try {
+        const product = new Product({ name, description, price });
+        const newProduct = await product.save();
+        res.status(201).json(newProduct);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Route for updating a product
+app.put("/products/:id", async (req, res) => {
+    const { id } = req.params;
+    const { name, description, price } = req.body;
+    try {
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        product.name = name;
+        product.description = description;
+        product.price = price;
+        const updatedProduct = await product.save();
+        res.json(updatedProduct);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Route for deleting a product
+app.delete("/products/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        await product.remove();
+        res.json({ message: 'Product deleted' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Route for getting all categories
+app.get("/categories", async (req, res) => {
+    try {
+        const categories = await Category.find();
+        res.json(categories);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Route for creating a new category
+app.post("/categories", async (req, res) => {
+    const { name } = req.body;
+    try {
+        const category = new Category({ name });
+        const newCategory = await category.save();
+        res.status(201).json(newCategory);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Route for updating a category
+app.put("/categories/:id", async (req, res) => {
+    const { id } = req.params;
+    const { name } = req.body;
+    try {
+        const category = await Category.findById(id);
+        if (!category) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+        category.name = name;
+        const updatedCategory = await category.save();
+        res.json(updatedCategory);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Route for deleting a category
+app.delete("/categories/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const category = await Category.findById(id);
+        if (!category) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+        await category.remove();
+        res.json({ message: 'Category deleted' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Mount product routes with authentication middleware
+app.use('/products', authenticateJWT, productRoutes);
+// Mount category routes with authentication middleware
+app.use('/categories', authenticateJWT, categoryRoutes);
+
+
+
+
 
 app.get("/", (req, res) => {
     res.send("Server is running successfully!");

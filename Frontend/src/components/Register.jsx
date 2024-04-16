@@ -1,4 +1,5 @@
 
+
 import { useState } from 'react';
 import { Link } from "react-router-dom";
 import axios from 'axios';
@@ -15,12 +16,10 @@ const Register = () => {
     // Register.jsx
     const handleRegister = (event) => {
         event.preventDefault();
-    
+
         axios.post('http://localhost:3002/register', { firstName, lastName, email, password })
             .then(result => {
                 console.log(result);
-                const responseData = result.data;
-    
                 if (result.status === 200) {
                     // Registration successful
                     alert("Registered successfully! Please Login to proceed.");
@@ -28,25 +27,20 @@ const Register = () => {
                     const updatedUsers = [...storedUsers, { firstName, lastName, email, password }];
                     localStorage.setItem("registeredUsers", JSON.stringify(updatedUsers));
                     navigate('/login');
-                } else if (result.status === 400 && responseData.message === "Email already registered") {
-                    // Email already registered
-                    alert("Email already registered! Please Login to proceed.");
-                    navigate('/login');
-                } else if (result.status === 400) {
-                    // Handle other validation errors
-                    alert("Registration failed. Please check your information and try again.");
-                } else {
-                    // Handle other cases if needed
-                    alert("Registration failed. Please try again later.");
                 }
             })
             .catch(err => {
                 console.log(err);
-                alert("Registration failed. Please try again later.");
+                if (err.response && err.response.data && err.response.data.message === "Email already registered") {
+                    // Email already registered
+                    alert("Email already registered! Please Login to proceed.");
+                    navigate('/login');
+                } else {
+                    // Handle other errors
+                    alert("Registration failed. Please try again later.");
+                }
             });
     };
-    
-
      
     return (
         <div>
