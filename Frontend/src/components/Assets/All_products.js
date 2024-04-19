@@ -1,21 +1,21 @@
 import p1_img from "./e1.png";
-import p2_img from "./e2.png";
+import p2_img from "./photo1.png";
 import p3_img from "./e3.png";
 import p4_img from "./a1.png";
-import p5_img from "./a2.png";
+import p5_img from "./photo2.png";
 import p6_img from "./a3.png";
 //import p7_img from "./I1.png";
-//import p8_img from "./I2.png";
+import p13_img from "./photo3.png";
 //import p9_img from "./I3.png";
 import p10_img from "./m1.png";
 import p11_img from "./m2.png";
 import p12_img from "./m3.png";
-import p13_img from "./s1.png";
-import p14_img from "./s2.png";
-import p15_img from "./s3.png";
-import p16_img from "./w1.png";
-import p17_img from "./w2.png";
-import p18_img from "./w3.png";
+//import p13_img from "./s1.png";
+import p14_img from "./photo4.png";
+import p15_img from "./kid1.png";
+import p16_img from "./men1.png";
+import p17_img from "./kid2.png";
+import p18_img from "./men2.png";
 
 
  let all_products=[
@@ -29,7 +29,7 @@ import p18_img from "./w3.png";
 },
 {
     id:2,
-    name:"digital watch",
+    name:"Jacket",
     category:"women",
     image:p2_img,
     new_price:60.0,
@@ -53,7 +53,7 @@ import p18_img from "./w3.png";
 },
 {
     id:5,
-    name:" Water proof watch",
+    name:" western dress",
     category:"women",
     image:p5_img,
     new_price:50.0,
@@ -67,45 +67,55 @@ import p18_img from "./w3.png";
     new_price:50.0,
     old_price:80.5,
 },
-/*,
 {
-    id:7,
-    name:"Water proof watch",
-    category:"men",
-    image:p7_img,
+    id:13,
+    name:"Saree",
+    category:"women",
+    image:p13_img,
     new_price:50.0,
     old_price:80.5,
 },
+
 {
-    id:8,
-    name:"Water proof watch",
+    id:14,
+    name:"Panjabi Dress",
     category:"women",
-    image:p8_img,
+    image:p14_img,
+    new_price:50.0,
+    old_price:80.5,
+}
+,
+{
+    id:15,
+    name:"Water proof watch",
+    category:"kid",
+    image:p15_img,
     new_price:50.0,
     old_price:80.5,
 }
 ,
    {
-    id:9,
-    name:"digital watch",
-    category:"kid",
-    image:p9_img,
-    new_price:50.0,
-    old_price:80.5,
-},*/
-{
-    id:10,
+    id:16,
     name:"digital watch",
     category:"men",
-    image:p10_img,
+    image:p16_img,
+    new_price:50.0,
+    old_price:80.5,
+}
+,
+{
+    id:17,
+    name:"digital watch",
+    category:"kid",
+    image:p17_img,
     new_price:50.0,
     old_price:80.5,
 },
 {
-    id:11,
+    id:18,
     name:"digital watch",
-    category:"",
-    image:p11_img,
+    category:"men",
+    image:p18_img,
     new_price:50.0,
     old_price:80.5,
 }

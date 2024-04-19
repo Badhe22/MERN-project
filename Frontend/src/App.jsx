@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ShopCategory from "./pages/ShopCategory";
+import Product from "./pages/Product";
 import Cart from "./pages/Cart";
 import Footer from "./components/Footer";
 import About from "./pages/About";
@@ -19,10 +20,12 @@ import AdminOrders from "./components/orders/AdminOrders";
 import AdminProducts from "./components/products/AdminProduct";
 //import Categories from "./components/Categories";
 import { SearchProvider } from './Context/SearchContext'; // Import the SearchProvider
-
+import men_banner from './components/Assets/banner_mens.png';
+import women_banner from './components/Assets/banner_women.png';
+import kid_banner from './components/Assets/banner_kids.png';
 
 import ShopCategories from "./pages/ShopCategory";
-import Product from "./pages/Product";
+
 
 import './index.css';
 
@@ -53,12 +56,13 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
 
-            <Route path="/mens" element={<ShopCategory category="men"/>}/>
-            <Route path="/womens" element={<ShopCategory category="women"/>}/>
-            <Route path="/kids" element={<ShopCategory category="kid"/>}/>
-            <Route path="/product" element={<Product/>}/>
-            <Route path=":productId" element={<Product/>}/>
-             <Route/>
+            <Route path="/mens" element={<ShopCategory  banner={men_banner} category="men"/>}/>
+            <Route path="/womens" element={<ShopCategory   banner={women_banner} category="women"/>}/>
+            <Route path="/kids" element={<ShopCategory  banner={kid_banner} category="kid"/>}/>
+            <Route path="/product" element={<Product/>}>
+            <Route path=':productId' element= {<Product/>}/>
+
+             </Route>
              <Route path="/cart" element={<Cart/>}/>
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
