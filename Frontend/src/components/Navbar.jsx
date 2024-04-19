@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, {  useContext,useState,useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSearch } from '../Context/SearchContext';
-//import cart_icon from './public/Images/cart_icon.png'
+import cart_icon from '../components/Assets/cart_icon1.png';
+import { ShopContext } from "../Context/ShopContext"; 
+
+
 function Navbar() {
   const [isRegisterVisible, setRegisterVisible] = useState(false);
   const [isLoginVisible, setLoginVisible] = useState(false);
@@ -15,6 +18,8 @@ function Navbar() {
   const [, setSearchResults] = useSearch();
 
   const [menu,setMenu] = useState("shop");
+  const {getTotalCartItems} = useContext(ShopContext);
+  //const menuRef =useRef();
 
   const handleSearch = () => {
     setSearchResults([]);
@@ -109,7 +114,7 @@ function Navbar() {
         </button>
       </div>
 
-      <ul className="flex list-none">
+      <ul className=" flex list-none">
         <li className="mr-4">
           <Link className="hover:text-gray-300" to="/">
             Home
@@ -163,11 +168,13 @@ function Navbar() {
           </Link>
         </li>
 
-
-        <li className="mr-4">
+        
+        <li className=" flex nav-login-cart mr-4">
           <Link className="hover:text-gray-300" to="/cart">
-            Cart
-          </Link>
+             <img  className="h-8 w-7" src={cart_icon} alt="" />
+             </Link>
+             <div className="nav-cart-count ">{getTotalCartItems()}</div>
+         
         </li>
         
         <li>

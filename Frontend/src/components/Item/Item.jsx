@@ -10,10 +10,10 @@ const Item = (props) => {
       <p className='mb-6'>{props.name}</p>
       <div className="item-prices flex gap-20">
         <div className='item-price-new text-gray-700 text-lg font-semibold'>
-          ${props.new_price}
+        Rs{props.new_price}
         </div>
         <div className='item-price-old text-gray-500 text-lg font-medium line-through'>
-          ${props.old_price}
+        Rs{props.old_price}
         </div>
       </div>
     </div>
