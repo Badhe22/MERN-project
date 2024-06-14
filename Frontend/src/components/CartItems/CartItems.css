@@ -1,9 +1,9 @@
 .cartitems{
-    margin: 100px 170px;
+    margin: 56px 124px;
 }
 .cartitems hr{
     height: 3 px;
-    background: #e2e2e2;
+    background: #e6dcdc;
     border: 0;
 }
 .cartitems-format-main{
@@ -12,8 +12,8 @@
     align-items: center;
     gap: 75px;
     padding: 20px 0px;
-    color: #454545;
-    font-size: 18px;
+    color: #0b0b0b;
+    font-size: 20px;
     font-weight: 600;
 }
 .cartitems-format{
@@ -44,6 +44,7 @@
     flex-direction: column;
     margin-right: 200px;
     gap: 40px;
+    
 }
 .cartitems-total-item{
     display: flex;

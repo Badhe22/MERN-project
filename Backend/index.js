@@ -1,18 +1,24 @@
+const port = 3002;
+
 const express = require("express");
+
 const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const usersModel = require('./Models/Users');
+//const usersModel = require('./Models/Users');
+const multer=require("multer");
+const path= require("path");
+const { log } = require("console");
+
 
 //added this below lines
-const Product = require('./Models/Product'); // Import Product model
-const Category = require('./Models/CategoryModel');
-const BusinessUser= require('./Models/BuisinessUser');
-const productRoutes = require('./routes/ProductRoutes'); // Import product routes
-const categoryRoutes = require('./routes/CategoryRoutes'); // Import category routes
+//const Product = require('./Models/Product'); // Import Product model
+//const Category = require('./Models/CategoryModel');
+//const BusinessUser= require('./Models/BuisinessUser');
+//const productRoutes = require('./routes/ProductRoutes'); // Import product routes
+//const categoryRoutes = require('./routes/CategoryRoutes'); // Import category routes
 //const authenticateJWT = require('./Middleware/authMiddleware');// Import the authentication middleware
-
 
 const app = express();
 app.use(express.json());
@@ -23,10 +29,11 @@ app.use(cors({
 }));
 
 //added this line
-app.use(express.static('public'));
+//app.use(express.static('public'));
+//Database connection string
 
 mongoose.connect("mongodb://127.0.0.1:27017/users");
-
+//mongoose.connect("mongodb+srv://supriyabadhe86:super%4026@cluster0.fbhz9r5.mongodb.net/Eccommerce_project")
 
 
 const secretKey = 'secret';
@@ -87,7 +94,7 @@ app.post('/register', async (req, res) => {
 
 
 
-app.post('/login', async (req, res) => {
+/*app.post('/login', async (req, res) => {
     const { email, password, userType, adminSecretKey } = req.body;
 
     try {
@@ -132,10 +139,49 @@ app.post('/login', async (req, res) => {
     }
 });
 
+*/
 
 
 
 
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
+
+        const user = await usersModel.findOne({ email: email });
+
+        if (!user) {
+            return res.status(400).json({ message: "Incorrect email or password" });
+        }
+
+        const match = await bcrypt.compare(password, user.password);
+
+        if (!match) {
+            return res.status(400).json({ message: "Incorrect email or password" });
+        }
+
+        // Generate user token
+        const token = jwt.sign({ email: user.email, userType: 'user' }, secretKey);
+        return res.json({ message: "Success", token });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
+
+
+
+
+
+
+
+/*
 // Route for getting all products
 app.get("/products", async (req, res) => {
     try {
@@ -251,9 +297,176 @@ app.use('/products', authenticateJWT, productRoutes);
 // Mount category routes with authentication middleware
 app.use('/categories', authenticateJWT, categoryRoutes);
 
+*/
+
+
+//Image Storage Engine
+
+const storage = multer.diskStorage({
+    destination: './upload/images',
+    filename:(req,file,cb)=>{
+        //return cb(null,${file.fieldname}_${Date.now()}${path.extname(file.originalname)})
+        return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
+
+    }
+})
+
+const upload = multer({storage:storage})
 
 
 
+//Creating Upload Endpoint for images
+
+app.use('/images',express.static('upload/images'))
+
+app.post("/upload", upload.single('product'), (req, res) => {
+    res.json({
+        success: 1,
+        image_url: `http://localhost:${port}/images/${req.file.filename}`
+    });
+});
+
+
+
+//Schema for creating product
+const Product = mongoose.model("Product",{
+    id:{
+        type: Number,
+        required:true,
+    },
+    name:{
+        type:String,
+        required:true,
+    },
+    image:{
+        type:String,
+        required:true,
+    },
+    category:{
+        type:String,
+        required:true,
+    },
+    new_price:{
+        type:Number,
+        required:true,
+    },
+    old_price:{
+        type:Number,
+        required:true,
+    },
+    date:{
+        type:Date,
+        default:Date.now,
+    },
+    available:{
+        type:Boolean,
+        default:true,
+    },  
+})
+
+
+
+app.post('/addproduct',async (req,res) =>{
+    let products= await Product.find({});
+    let id ;
+    if(products.length>0)
+    {
+        let last_product_array = products.slice(-1);
+        let last_product = last_product_array[0];
+        id =last_product.id+1;
+    }
+    else
+    {
+        id=1;
+    }
+   
+
+    const product = new Product({
+        id:id,
+        name:req.body.name,
+        image:req.body.image,
+        category:req.body.category,
+        new_price:req.body.new_price,
+        old_price:req.body.old_price,
+    });
+
+    console.log(product);
+    await product.save();
+    console.log("Saved");
+    res.json({
+        success:true,
+        name:req.body.name,
+    })
+})
+
+
+
+//Creating API for deleting products
+
+app.post('/removeproduct',async (req,res)=>{
+    await Product.findOneAndDelete({id:req.body.id});
+    console.log("Removed");
+    res.json({
+        success:true,
+        name:req.body.name
+    })
+})
+
+
+//Creating API for getting all products
+app.get('/allproducts',async(req,res) =>{
+    let products = await Product.find({});
+    console.log("All products Fetched");
+    res.send(products);
+})
+
+
+//Schema creating for user model
+
+const Users = mongoose.model('Users',{
+    name:{
+        type:String,
+    },
+    email:{
+        type:String,
+        unique:true,
+    },
+    password:{
+        type:String,
+    },
+    cartData:{
+        type:Object,
+    },
+    date:{
+        type:Date,
+        default:Date.now,
+    }
+ })
+
+/*
+ //Creating Endpoint for registering the user
+app.post('/register',async (req,res) =>{
+
+    let check = await Users.findOne({email:req.body.email});
+    if(check){
+        return res.status(400).json({success:false,errors:"existing user found with same email address"})
+    }
+    let cart = {};
+    for (let i = 0; i < 300; i++) {
+        cart[i] = 0;
+    }
+    const user = new Users({
+        name:req.body.username,
+        email:req.body.email,
+        password:req.body.password,
+        cartData:cart,
+    })
+
+
+    await user.save();
+
+
+})*/
 
 app.get("/", (req, res) => {
     res.send("Server is running successfully!");
@@ -263,8 +476,13 @@ app.get("/protected", authenticateJWT, (req, res) => {
     res.json({ message: "This is a protected route" });
 });
 
-const PORT = 3002;
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+
+app.listen(port, (error) => {
+    if(!error){
+    console.log(`Server is running on http://localhost:${port}`);
+}else{
+    console.log("Error: " +error)
+}
+})
+
