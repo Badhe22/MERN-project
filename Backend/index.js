@@ -33,7 +33,7 @@ app.use(cors({
 //Database connection string
 
 mongoose.connect("mongodb://127.0.0.1:27017/users");
-//mongoose.connect("mongodb+srv://supriyabadhe86:super%4026@cluster0.fbhz9r5.mongodb.net/Eccommerce_project")
+
 
 
 const secretKey = 'secret';
